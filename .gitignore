@@ -1,0 +1,35 @@
+# WordPress Configuration
+public_html/wp-config.php
+
+# WordPress Core Files
+public_html/wp-content/cache/
+public_html/wp-content/uploads/
+public_html/wp-content/upgrade/
+public_html/wp-content/backup-db/
+public_html/wp-content/backups/
+public_html/wp-content/blogs.dir/
+
+# WordPress Plugins (optional - uncomment if you don't want to track plugins)
+# public_html/wp-content/plugins/
+
+# Log Files
+*.log
+public_html/wp-admin/error_log
+public_html/error_log
+
+# System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary Files
+*.tmp
+*.bak
+*.old
