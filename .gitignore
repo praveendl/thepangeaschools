@@ -1,6 +1,10 @@
 # WordPress Configuration
 public_html/wp-config.php
 
+# Large Files
+public_html/files.zip
+*.zip
+
 # WordPress Core Files
 public_html/wp-content/cache/
 public_html/wp-content/uploads/
