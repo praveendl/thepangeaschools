@@ -1,0 +1,206 @@
+/*
+Theme Name: Pangea Schools
+Theme URI: http://www.dewstudios.in
+Author: DEW Studios
+Author URI: http://www.dewstudios.in
+Description: This is Pangea Schools Custom WordPress Theme.
+Version: 1.0
+License: GNU General Public License
+License URI: license.txt
+*/
+
+/* Mozilla based browsers */
+::-moz-selection {
+       background-color: #288948;
+       color: #fff;
+}
+
+/* Works in Safari */
+::selection {
+       background-color: #288948;
+       color: #fff;
+}
+
+body {
+	margin: 0px;
+	padding: 0px;
+	font-family: 'Lato', sans-serif;
+}
+
+h1 { font-size: 36px; }
+h2 { font-size: 30px; }
+h3 { font-size: 24px; }
+h4 { font-size: 18px; }
+h5 { font-size: 14px; }
+h6 { font-size: 12px; }
+
+.header-container, .footer-container {
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+}
+
+a img {
+	border: 0px none;
+}
+
+.clear {
+	clear: both;
+}
+
+#header {
+	height: 150px;
+	border: 2px dotted grey;
+}
+
+#logo {
+	float: left;
+	margin: 5px 0 0 30px;
+}
+
+#content {
+	display: inline-block;
+    vertical-align: top;
+	width: 60%;
+	padding: 20px 20px 0 10px;
+}
+
+.sidebar {
+	display: inline-block;
+    vertical-align: top;
+	width: 30%;
+	padding-top: 20px;
+}
+
+.sidebar ul {
+	padding: 0 10px 0 20px;
+}
+
+/* ------------ Footer ----------------- */
+
+#footer {
+	height: 50px;
+	border: 2px dotted grey;
+}
+
+/* ------------- Blog Index ------------- */
+
+
+
+/* -------------- Menu ----------------- */
+
+#topnavbar {
+	float: right;
+	width: 680px !important;
+	height: 43px;
+	background: transparent;
+	margin: 15px 20px 0 0;
+}
+
+.sf-menu li {
+	background: transparent !important;
+	margin: 5px 10px 5px 10px;
+	padding: 5px !important;
+}
+
+.sf-menu li a {
+	border: 0px none !important;
+	font-size: 16px !important;
+	color: #000 !important;
+	text-decoration: none;
+	text-transform: uppercase !important;
+	letter-spacing: 0.2px;
+	padding: 0px !important;
+}
+
+.sf-menu li a:visited {
+	color: #000 !important;
+}
+
+.sf-menu li a:hover {
+	background: transparent !important;
+	text-decoration: underline;
+}
+
+.sf-menu li.current_page_item {
+	background: #0098C4 !important;
+}
+
+.sf-menu li.current_page_item a {
+	color: #ffffff !important;
+}
+
+.sf-menu li.current_page_item ul li a {
+	color: #000 !important;
+}
+
+.sub-menu li {
+	background: #ffffff none !important;
+	width: 150px !important;
+	border: 1px solid #F69525;
+	border-bottom: 0px none;
+	padding: 0px !important;
+    margin: 0px;
+}
+
+.sub-menu li:last-child {
+	border-bottom: 1px solid #8E1838;
+}
+
+.sub-menu li a, .sub-menu li a:visited {
+	background: #ffffff none !important;
+	border: 0px none !important;
+	font-size: 14px !important;
+	color: #000 !important;
+	text-decoration: none;
+	letter-spacing: 0.2px;
+	padding: 10px !important;
+	margin: 0px !important;
+}
+
+.sub-menu li a:hover {
+	background: #fff !important;
+}
+
+.sub-menu li .sub-menu {
+    left: 150px !important;
+}
+/* -------------- Menu ----------------- */
+
+/* ---------------- tags ---------------------- */
+
+ul#tags li {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+ul#tags li a, ul#tags li a:visited,
+.tagcloud a, .tagcloud a:visited {
+    background: #FFF8D9;
+    padding: 5px 20px 5px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #95969A;
+    font-size: 12px;
+}
+
+ul#tags li a:hover, .tagcloud a:hover {
+    background: #FFCB05;
+}
+
+.tagcloud a, .tagcloud a:visited {
+    margin: 10px 10px 0 0;
+}
+
+.tagcloud {
+    margin: 16px 0px;
+}
+
+/* ---------------- tags ---------------------- */
+
+/* ----------- Responsiveness Code ---------------- */
+
+@media all and (max-width: 768px) and (min-width: 0px) {
+
+
+
+}
