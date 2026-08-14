@@ -204,3 +204,11 @@ ul#tags li a:hover, .tagcloud a:hover {
 
 
 }
+
+/* Hide X/Twitter social link */
+.wp-social-link-twitter,
+.wp-block-social-link-twitter,
+a[href*="twitter.com"],
+a[href*="x.com"] {
+	display: none !important;
+}

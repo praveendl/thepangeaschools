@@ -1,0 +1,12 @@
+{
+  "students": {
+    "53:15:4E:CC:33:00:01": {
+      "name": "Sreedha Akula",
+      "room": "Twos-1"
+    },
+    "RFID_TAG_ID_2": {
+      "name": "Student Name 2",
+      "room": "Twos-1"
+    }
+  }
+}
