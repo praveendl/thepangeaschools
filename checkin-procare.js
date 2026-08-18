@@ -104,26 +104,77 @@ async function checkinStudent(studentName) {
       console.log('⚠️  Could not take screenshot');
     }
     
-    // Verify the sign-in button is visible and enabled
-    const signInButton = page.getByRole('button', { name: 'Sign in' });
-    const isVisible = await signInButton.isVisible();
-    const isEnabled = await signInButton.isEnabled();
+    // Wait a bit for any JavaScript to finish loading
+    await page.waitForTimeout(1000);
+    
+    // Find the submit button using multiple selectors
+    console.log('🔍 Looking for submit button...');
+    
+    let submitButton = null;
+    
+    // Try different selectors
+    const selectors = [
+      'button[type="submit"]',
+      'button:has-text("Sign in")',
+      '.submit-button',
+      '[data-testid*="submit"]'
+    ];
+    
+    for (const selector of selectors) {
+      const btn = page.locator(selector).first();
+      if (await btn.isVisible().catch(() => false)) {
+        submitButton = btn;
+        console.log(`✅ Found button with selector: ${selector}`);
+        break;
+      }
+    }
+    
+    if (!submitButton) {
+      submitButton = page.getByRole('button', { name: 'Sign in' });
+      console.log('Using role-based selector');
+    }
+    
+    const isVisible = await submitButton.isVisible();
+    const isEnabled = await submitButton.isEnabled();
     console.log(`🔍 Sign in button - visible: ${isVisible}, enabled: ${isEnabled}`);
     
     if (!isEnabled) {
-      console.log('❌ Sign in button is disabled - form validation failed');
-      // Check for required empty fields
-      const emptyRequired = await page.locator('input:required:invalid, select:required:invalid').count();
-      console.log(`⚠️  Found ${emptyRequired} invalid required fields`);
-      throw new Error('Sign in button is disabled - check required fields');
+      console.log('❌ Sign in button is disabled');
+      throw new Error('Sign in button is disabled');
     }
     
-    // Try clicking with force option to bypass any overlays
-    await signInButton.click({ force: true });
-    console.log('✅ Clicked Sign in button (forced)');
+    // Scroll button into view
+    await submitButton.scrollIntoViewIfNeeded();
+    console.log('📜 Scrolled to button');
     
-    // Wait longer for processing
-    await page.waitForTimeout(2000);
+    // Try pressing Enter on the form instead of clicking
+    try {
+      console.log('⌨️  Trying to submit with Enter key...');
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(2000);
+      
+      // Check if form closed
+      const formClosed = !(await page.locator('.modal, form').first().isVisible().catch(() => false));
+      if (formClosed) {
+        console.log('✅ Form submitted via Enter key');
+      } else {
+        console.log('⚠️  Enter key did not submit, trying click...');
+        
+        // Try regular click
+        await submitButton.click();
+        await page.waitForTimeout(1000);
+        
+        const formClosedAfterClick = !(await page.locator('.modal, form').first().isVisible().catch(() => false));
+        if (!formClosedAfterClick) {
+          // Try force click as last resort
+          console.log('⚠️  Regular click failed, trying force click...');
+          await submitButton.click({ force: true });
+          await page.waitForTimeout(1000);
+        }
+      }
+    } catch (e) {
+      console.log(`⚠️  Error during submission: ${e.message}`);
+    }
     
     // Check if there's an error message
     const errorExists = await page.locator('.error, .alert, [role="alert"]').first().isVisible().catch(() => false);
