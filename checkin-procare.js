@@ -156,7 +156,9 @@ async function checkinStudent(studentName) {
     if (timeDisplays.length > 0) {
       console.log(`⏰ Found ${timeDisplays.length} time display fields`);
       for (const display of timeDisplays) {
-        const value = await display.inputValue().catch(() => await display.textContent().catch(() => ''));
+        const value = await display.inputValue().catch(async () => {
+          return await display.textContent().catch(() => '');
+        });
         if (value) {
           console.log(`   Time shown: ${value}`);
         }
