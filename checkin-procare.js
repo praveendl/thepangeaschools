@@ -101,6 +101,34 @@ async function checkinStudent(studentName) {
       console.log('✅ Staff selected');
     }
     
+    // Wait for any pending network requests to complete
+    console.log('⏳ Waiting for network to be idle...');
+    try {
+      await page.waitForLoadState('networkidle', { timeout: 5000 });
+      console.log('✅ Network idle');
+    } catch (e) {
+      console.log('⚠️  Network not idle, continuing anyway');
+    }
+    
+    // Wait a bit more for JavaScript to initialize
+    await page.waitForTimeout(1000);
+    
+    // Check if there are any time/date picker icons that need clicking
+    const timeIcons = await page.locator('.time-picker, .clock-icon, [class*="time"], [class*="clock"]').count();
+    console.log(`🕐 Found ${timeIcons} potential time picker elements`);
+    
+    // Check if there's a displayed time that might need to be "touched" or confirmed
+    const timeDisplays = await page.locator('input[readonly], .time-display').all();
+    if (timeDisplays.length > 0) {
+      console.log(`⏰ Found ${timeDisplays.length} time display fields`);
+      for (const display of timeDisplays) {
+        const value = await display.inputValue().catch(() => await display.textContent().catch(() => ''));
+        if (value) {
+          console.log(`   Time shown: ${value}`);
+        }
+      }
+    }
+    
     // Submit check-in (uses current time)
     console.log('💾 Submitting check-in...');
     
