@@ -71,6 +71,14 @@ async function checkinStudent(studentName) {
     // Log current URL to verify we're on the right page
     console.log(`📍 Current URL: ${page.url()}`);
     
+    // Check for time input fields (might be required)
+    const timeInputs = await page.locator('input[type="time"], input[placeholder*="time" i]').count();
+    console.log(`⏰ Found ${timeInputs} time input fields`);
+    
+    if (timeInputs > 0) {
+      console.log('⚠️  Time fields detected - these might need to be filled!');
+    }
+    
     // Select room and staff (use first option for both)
     const dropdowns = await page.locator('.dropdown-portal__header:visible').all();
     console.log(`🔍 Found ${dropdowns.length} dropdowns`);
@@ -147,29 +155,38 @@ async function checkinStudent(studentName) {
     await submitButton.scrollIntoViewIfNeeded();
     console.log('📜 Scrolled to button');
     
-    // Try pressing Enter on the form instead of clicking
+    // Get button position for more human-like interaction
+    const buttonBox = await submitButton.boundingBox();
+    if (buttonBox) {
+      console.log(`📍 Button position: x=${buttonBox.x}, y=${buttonBox.y}`);
+      
+      // Move mouse to button (more human-like)
+      await page.mouse.move(buttonBox.x + buttonBox.width / 2, buttonBox.y + buttonBox.height / 2);
+      await page.waitForTimeout(100);
+      console.log('🖱️  Moved mouse to button');
+    }
+    
+    // Try clicking with delay (simulates human click)
     try {
-      console.log('⌨️  Trying to submit with Enter key...');
-      await page.keyboard.press('Enter');
+      console.log('🖱️  Trying click with delay...');
+      await submitButton.click({ delay: 100 });
       await page.waitForTimeout(2000);
       
-      // Check if form closed
       const formClosed = !(await page.locator('.modal, form').first().isVisible().catch(() => false));
       if (formClosed) {
-        console.log('✅ Form submitted via Enter key');
+        console.log('✅ Form submitted via delayed click');
       } else {
-        console.log('⚠️  Enter key did not submit, trying click...');
+        console.log('⚠️  Delayed click did not work, trying dispatchEvent...');
         
-        // Try regular click
-        await submitButton.click();
-        await page.waitForTimeout(1000);
+        // Try triggering click event directly via JavaScript
+        await submitButton.evaluate(btn => btn.click());
+        await page.waitForTimeout(2000);
         
-        const formClosedAfterClick = !(await page.locator('.modal, form').first().isVisible().catch(() => false));
-        if (!formClosedAfterClick) {
-          // Try force click as last resort
-          console.log('⚠️  Regular click failed, trying force click...');
-          await submitButton.click({ force: true });
-          await page.waitForTimeout(1000);
+        const formClosedAfterJS = !(await page.locator('.modal, form').first().isVisible().catch(() => false));
+        if (formClosedAfterJS) {
+          console.log('✅ Form submitted via JavaScript click');
+        } else {
+          console.log('⚠️  JavaScript click also failed');
         }
       }
     } catch (e) {
