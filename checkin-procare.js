@@ -228,6 +228,18 @@ async function checkoutStudent(studentName) {
     await page.getByText('Sign-Out Attendance').click();
     await page.waitForTimeout(1000);
     
+    // Wait for the page to load and search box to appear
+    console.log(`🔍 Waiting for search box...`);
+    try {
+      await page.waitForSelector('#search', { timeout: 10000, state: 'visible' });
+      console.log('✅ Search box found');
+    } catch (e) {
+      console.log('❌ Search box not found');
+      console.log(`📍 Current URL: ${page.url()}`);
+      await page.screenshot({ path: 'checkout-no-search.png' });
+      throw new Error('Search box not found on Sign-Out page');
+    }
+    
     // Search for student
     console.log(`🔍 Searching for ${studentName}...`);
     await page.locator('#search').fill(studentName.toLowerCase());
