@@ -23,8 +23,6 @@ async function checkinStudent(studentName) {
     });
     
     const page = await context.newPage();
-
-  try {
     // Login
     console.log('🔐 Logging into Procare...');
     await page.goto(process.env.PROCARE_LOGIN_URL);
@@ -303,8 +301,6 @@ async function checkoutStudent(studentName) {
     });
     
     const page = await context.newPage();
-
-  try {
     // Login
     console.log('🔐 Logging into Procare...');
     await page.goto(process.env.PROCARE_LOGIN_URL);
@@ -411,3 +407,4 @@ async function checkoutStudent(studentName) {
 }
 
 module.exports = { checkinStudent, checkoutStudent };
+
