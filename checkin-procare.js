@@ -81,11 +81,15 @@ async function checkinStudent(studentName) {
       
       if (process.env.PROCARE_TO_ROOM) {
         try {
+          console.log(`🏠 Selecting room: ${process.env.PROCARE_TO_ROOM}`);
           await page.getByText(process.env.PROCARE_TO_ROOM, { exact: true }).click();
+          console.log(`✅ Selected room: ${process.env.PROCARE_TO_ROOM}`);
         } catch (e) {
+          console.log(`⚠️  Room not found, using first option`);
           await page.locator('.select-group__item:visible').first().click();
         }
       } else {
+        console.log(`⚠️  No PROCARE_TO_ROOM set, using first option`);
         await page.locator('.select-group__item:visible').first().click();
       }
       await page.waitForTimeout(500);
@@ -97,11 +101,15 @@ async function checkinStudent(studentName) {
       
       if (process.env.PROCARE_SIGNED_IN_BY) {
         try {
+          console.log(`✍️  Selecting signed in by: ${process.env.PROCARE_SIGNED_IN_BY}`);
           await page.getByText(process.env.PROCARE_SIGNED_IN_BY, { exact: true }).click();
+          console.log(`✅ Selected: ${process.env.PROCARE_SIGNED_IN_BY}`);
         } catch (e) {
+          console.log(`⚠️  Person not found, using first option`);
           await page.locator('.select-group__item:visible').first().click();
         }
       } else {
+        console.log(`⚠️  No PROCARE_SIGNED_IN_BY set, using first option`);
         await page.locator('.select-group__item:visible').first().click();
       }
       await page.waitForTimeout(500);
@@ -126,12 +134,30 @@ async function checkinStudent(studentName) {
     await signInButton.click();
     console.log('✅ Clicked Sign in button');
     
+    // Wait a moment for any validation errors
+    await page.waitForTimeout(1000);
+    
+    // Check if there's an error message
+    const errorExists = await page.locator('.error, .alert, [role="alert"]').first().isVisible().catch(() => false);
+    if (errorExists) {
+      const errorText = await page.locator('.error, .alert, [role="alert"]').first().textContent();
+      console.log(`❌ Form error: ${errorText}`);
+      throw new Error(`Procare form error: ${errorText}`);
+    }
+    
     // Wait for navigation or success indicator
     try {
-      await page.waitForLoadState('networkidle', { timeout: 5000 });
-      console.log('✅ Form submitted successfully');
+      // Wait for the URL to change (indicates successful submission)
+      await page.waitForURL('**/attendance**', { timeout: 5000 });
+      console.log('✅ Form submitted - navigated to attendance page');
     } catch (e) {
-      console.log('⚠️  Network idle timeout (may still be successful)');
+      // Or wait for success message
+      try {
+        await page.waitForSelector('.success, .toast, [role="status"]', { timeout: 3000 });
+        console.log('✅ Form submitted - success message shown');
+      } catch (e2) {
+        console.log('⚠️  Could not confirm submission (may still be successful)');
+      }
     }
     
     try {
