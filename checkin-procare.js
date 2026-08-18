@@ -68,8 +68,12 @@ async function checkinStudent(studentName) {
     
     console.log('📝 Filling details...');
     
+    // Log current URL to verify we're on the right page
+    console.log(`📍 Current URL: ${page.url()}`);
+    
     // Select room and staff
     const dropdowns = await page.locator('.dropdown-portal__header:visible').all();
+    console.log(`🔍 Found ${dropdowns.length} dropdowns`);
     
     if (dropdowns.length > 0) {
       await dropdowns[0].click();
@@ -105,7 +109,30 @@ async function checkinStudent(studentName) {
     
     // Submit check-in (uses current time)
     console.log('💾 Submitting check-in...');
-    await page.getByRole('button', { name: 'Sign in' }).click();
+    
+    // Take screenshot before submission for debugging
+    try {
+      await page.screenshot({ path: 'before-submit.png' });
+      console.log('📸 Screenshot saved');
+    } catch (e) {
+      console.log('⚠️  Could not take screenshot');
+    }
+    
+    // Verify the sign-in button is visible
+    const signInButton = page.getByRole('button', { name: 'Sign in' });
+    const isVisible = await signInButton.isVisible();
+    console.log(`🔍 Sign in button visible: ${isVisible}`);
+    
+    await signInButton.click();
+    console.log('✅ Clicked Sign in button');
+    
+    // Wait for navigation or success indicator
+    try {
+      await page.waitForLoadState('networkidle', { timeout: 5000 });
+      console.log('✅ Form submitted successfully');
+    } catch (e) {
+      console.log('⚠️  Network idle timeout (may still be successful)');
+    }
     
     try {
       await page.waitForTimeout(2000);
