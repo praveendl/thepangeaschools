@@ -74,10 +74,15 @@ async function checkinStudent(studentName) {
     // Select room and staff
     const dropdowns = await page.locator('.dropdown-portal__header:visible').all();
     console.log(`🔍 Found ${dropdowns.length} dropdowns`);
+    console.log(`🔧 ENV: PROCARE_TO_ROOM="${process.env.PROCARE_TO_ROOM}", PROCARE_SIGNED_IN_BY="${process.env.PROCARE_SIGNED_IN_BY}"`);
     
     if (dropdowns.length > 0) {
       await dropdowns[0].click();
       await page.waitForTimeout(500);
+      
+      // List available options
+      const roomOptions = await page.locator('.select-group__item:visible').allTextContents();
+      console.log(`📋 Available rooms: ${JSON.stringify(roomOptions)}`);
       
       if (process.env.PROCARE_TO_ROOM) {
         try {
@@ -98,6 +103,10 @@ async function checkinStudent(studentName) {
     if (dropdowns.length > 1) {
       await dropdowns[1].click();
       await page.waitForTimeout(500);
+      
+      // List available options
+      const staffOptions = await page.locator('.select-group__item:visible').allTextContents();
+      console.log(`📋 Available staff: ${JSON.stringify(staffOptions)}`);
       
       if (process.env.PROCARE_SIGNED_IN_BY) {
         try {
