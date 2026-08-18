@@ -71,57 +71,26 @@ async function checkinStudent(studentName) {
     // Log current URL to verify we're on the right page
     console.log(`📍 Current URL: ${page.url()}`);
     
-    // Select room and staff
+    // Select room and staff (use first option for both)
     const dropdowns = await page.locator('.dropdown-portal__header:visible').all();
     console.log(`🔍 Found ${dropdowns.length} dropdowns`);
-    console.log(`🔧 ENV: PROCARE_TO_ROOM="${process.env.PROCARE_TO_ROOM}", PROCARE_SIGNED_IN_BY="${process.env.PROCARE_SIGNED_IN_BY}"`);
     
     if (dropdowns.length > 0) {
+      console.log('🏠 Selecting first room option');
       await dropdowns[0].click();
       await page.waitForTimeout(500);
-      
-      // List available options
-      const roomOptions = await page.locator('.select-group__item:visible').allTextContents();
-      console.log(`📋 Available rooms: ${JSON.stringify(roomOptions)}`);
-      
-      if (process.env.PROCARE_TO_ROOM) {
-        try {
-          console.log(`🏠 Selecting room: ${process.env.PROCARE_TO_ROOM}`);
-          await page.getByText(process.env.PROCARE_TO_ROOM, { exact: true }).click();
-          console.log(`✅ Selected room: ${process.env.PROCARE_TO_ROOM}`);
-        } catch (e) {
-          console.log(`⚠️  Room not found, using first option`);
-          await page.locator('.select-group__item:visible').first().click();
-        }
-      } else {
-        console.log(`⚠️  No PROCARE_TO_ROOM set, using first option`);
-        await page.locator('.select-group__item:visible').first().click();
-      }
+      await page.locator('.select-group__item:visible').first().click();
       await page.waitForTimeout(500);
+      console.log('✅ Room selected');
     }
     
     if (dropdowns.length > 1) {
+      console.log('✍️  Selecting first staff option');
       await dropdowns[1].click();
       await page.waitForTimeout(500);
-      
-      // List available options
-      const staffOptions = await page.locator('.select-group__item:visible').allTextContents();
-      console.log(`📋 Available staff: ${JSON.stringify(staffOptions)}`);
-      
-      if (process.env.PROCARE_SIGNED_IN_BY) {
-        try {
-          console.log(`✍️  Selecting signed in by: ${process.env.PROCARE_SIGNED_IN_BY}`);
-          await page.getByText(process.env.PROCARE_SIGNED_IN_BY, { exact: true }).click();
-          console.log(`✅ Selected: ${process.env.PROCARE_SIGNED_IN_BY}`);
-        } catch (e) {
-          console.log(`⚠️  Person not found, using first option`);
-          await page.locator('.select-group__item:visible').first().click();
-        }
-      } else {
-        console.log(`⚠️  No PROCARE_SIGNED_IN_BY set, using first option`);
-        await page.locator('.select-group__item:visible').first().click();
-      }
+      await page.locator('.select-group__item:visible').first().click();
       await page.waitForTimeout(500);
+      console.log('✅ Staff selected');
     }
     
     // Submit check-in (uses current time)
@@ -264,23 +233,17 @@ async function checkoutStudent(studentName) {
     
     console.log('📝 Filling details...');
     
-    // Select "Signed out by" dropdown
+    // Select "Signed out by" dropdown (use first option)
     const dropdowns = await page.locator('.dropdown-portal__header:visible').all();
+    console.log(`🔍 Found ${dropdowns.length} dropdowns`);
     
     if (dropdowns.length > 0) {
+      console.log('✍️  Selecting first staff option');
       await dropdowns[0].click();
       await page.waitForTimeout(500);
-      
-      if (process.env.PROCARE_SIGNED_IN_BY) {
-        try {
-          await page.getByText(process.env.PROCARE_SIGNED_IN_BY, { exact: true }).click();
-        } catch (e) {
-          await page.locator('.select-group__item:visible').first().click();
-        }
-      } else {
-        await page.locator('.select-group__item:visible').first().click();
-      }
+      await page.locator('.select-group__item:visible').first().click();
       await page.waitForTimeout(500);
+      console.log('✅ Staff selected');
     }
     
     // Submit check-out
