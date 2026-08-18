@@ -18,8 +18,42 @@ async function checkinStudent(studentName) {
       '--single-process'
     ]
   });
-  const context = await browser.newContext();
+  
+  const context = await browser.newContext({
+    // Make browser look more like a real user
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    viewport: { width: 1920, height: 1080 },
+    locale: 'en-US',
+    timezoneId: 'America/New_York',
+    permissions: [],
+    // Bypass bot detection
+    javaScriptEnabled: true,
+    hasTouch: false,
+    isMobile: false
+  });
+  
   const page = await context.newPage();
+  
+  // Add real-browser properties to avoid detection
+  await page.addInitScript(() => {
+    // Override webdriver property
+    Object.defineProperty(navigator, 'webdriver', {
+      get: () => false,
+    });
+    
+    // Add chrome property
+    window.chrome = {
+      runtime: {},
+    };
+    
+    // Override permissions
+    const originalQuery = window.navigator.permissions.query;
+    window.navigator.permissions.query = (parameters) => (
+      parameters.name === 'notifications' ?
+        Promise.resolve({ state: Notification.permission }) :
+        originalQuery(parameters)
+    );
+  });
 
   try {
     // Login
@@ -291,8 +325,36 @@ async function checkoutStudent(studentName) {
       '--single-process'
     ]
   });
-  const context = await browser.newContext();
+  
+  const context = await browser.newContext({
+    // Make browser look more like a real user
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    viewport: { width: 1920, height: 1080 },
+    locale: 'en-US',
+    timezoneId: 'America/New_York',
+    permissions: [],
+    javaScriptEnabled: true,
+    hasTouch: false,
+    isMobile: false
+  });
+  
   const page = await context.newPage();
+  
+  // Add real-browser properties to avoid detection
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', {
+      get: () => false,
+    });
+    window.chrome = {
+      runtime: {},
+    };
+    const originalQuery = window.navigator.permissions.query;
+    window.navigator.permissions.query = (parameters) => (
+      parameters.name === 'notifications' ?
+        Promise.resolve({ state: Notification.permission }) :
+        originalQuery(parameters)
+    );
+  });
 
   try {
     // Login
