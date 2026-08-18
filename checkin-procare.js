@@ -104,16 +104,26 @@ async function checkinStudent(studentName) {
       console.log('⚠️  Could not take screenshot');
     }
     
-    // Verify the sign-in button is visible
+    // Verify the sign-in button is visible and enabled
     const signInButton = page.getByRole('button', { name: 'Sign in' });
     const isVisible = await signInButton.isVisible();
-    console.log(`🔍 Sign in button visible: ${isVisible}`);
+    const isEnabled = await signInButton.isEnabled();
+    console.log(`🔍 Sign in button - visible: ${isVisible}, enabled: ${isEnabled}`);
     
-    await signInButton.click();
-    console.log('✅ Clicked Sign in button');
+    if (!isEnabled) {
+      console.log('❌ Sign in button is disabled - form validation failed');
+      // Check for required empty fields
+      const emptyRequired = await page.locator('input:required:invalid, select:required:invalid').count();
+      console.log(`⚠️  Found ${emptyRequired} invalid required fields`);
+      throw new Error('Sign in button is disabled - check required fields');
+    }
     
-    // Wait a moment for any validation errors
-    await page.waitForTimeout(1000);
+    // Try clicking with force option to bypass any overlays
+    await signInButton.click({ force: true });
+    console.log('✅ Clicked Sign in button (forced)');
+    
+    // Wait longer for processing
+    await page.waitForTimeout(2000);
     
     // Check if there's an error message
     const errorExists = await page.locator('.error, .alert, [role="alert"]').first().isVisible().catch(() => false);
@@ -129,12 +139,14 @@ async function checkinStudent(studentName) {
       await page.waitForURL('**/attendance**', { timeout: 5000 });
       console.log('✅ Form submitted - navigated to attendance page');
     } catch (e) {
-      // Or wait for success message
-      try {
-        await page.waitForSelector('.success, .toast, [role="status"]', { timeout: 3000 });
-        console.log('✅ Form submitted - success message shown');
-      } catch (e2) {
-        console.log('⚠️  Could not confirm submission (may still be successful)');
+      // Check if form is still visible (would mean submission failed)
+      const formStillVisible = await page.locator('.modal, form').first().isVisible().catch(() => false);
+      if (formStillVisible) {
+        console.log('⚠️  Form still visible after click - submission may have failed');
+        await page.screenshot({ path: 'after-submit-failed.png' });
+        console.log('📸 Failure screenshot saved');
+      } else {
+        console.log('✅ Form closed - submission likely successful');
       }
     }
     
